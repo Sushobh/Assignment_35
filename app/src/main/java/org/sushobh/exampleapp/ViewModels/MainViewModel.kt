@@ -21,8 +21,8 @@ class MainViewModel  : BaseViewModel<MainPresenter>() {
 
 
 
-    var shirtItemsLiveData = MutableLiveData<List<ClothItem>>()
-    var pantItemsLiveData = MutableLiveData<List<ClothItem>>()
+    var shirtItemsLiveData : MutableLiveData<List<ClothItem>> = MutableLiveData<List<ClothItem>>()
+    var pantItemsLiveData : MutableLiveData<List<ClothItem>> = MutableLiveData<List<ClothItem>>()
     var currentPagerPosition = MutableLiveData<Pair<Int,Int>>()
     var favIconLiveData = MutableLiveData<Boolean>()
 
@@ -70,32 +70,53 @@ class MainViewModel  : BaseViewModel<MainPresenter>() {
     }
 
     fun clickedOnFavorite(shirtPosition : Int,pantPosition : Int) {
-
-        if( mainModel.contains(shirtItemsLiveData.value!![shirtPosition].fileUri,
-                pantItemsLiveData.value!![pantPosition].fileUri)){
-            mainModel.updateFav(shirtItemsLiveData.value!![shirtPosition].fileUri,
-                pantItemsLiveData.value!![pantPosition].fileUri)
-            favIconLiveData.value = mainModel.isFav(shirtItemsLiveData.value!![shirtPosition].fileUri,
-                pantItemsLiveData.value!![pantPosition].fileUri)
-         }
-        else {
-            mainModel.addFav(FavoriteCombination(
-                shirtItemsLiveData.value!![shirtPosition].fileUri,
-                pantItemsLiveData.value!![pantPosition].fileUri,true)
-            )
-            favIconLiveData.value = mainModel.isFav(shirtItemsLiveData.value!![shirtPosition].fileUri,
-                pantItemsLiveData.value!![pantPosition].fileUri)
+        if(shirtItemsLiveData.value != null && pantItemsLiveData.value != null){
+            if(!(shirtPosition>=0 && pantPosition >=0)){
+                return
+            }
+            val shirtImageUri = shirtItemsLiveData.value!![shirtPosition].fileUri
+            val pantImageUri = pantItemsLiveData.value!![pantPosition].fileUri
+            if( mainModel.contains(shirtImageUri,
+                    pantImageUri)){
+                mainModel.updateFav(shirtImageUri,
+                    pantImageUri)
+                favIconLiveData.value = mainModel.isFav(shirtImageUri,
+                    pantImageUri)
+            }
+            else {
+                mainModel.addFav(FavoriteCombination(
+                    shirtImageUri,
+                    pantImageUri,true)
+                )
+                favIconLiveData.value = mainModel.isFav(shirtImageUri,
+                    pantImageUri)
+            }
         }
-
 
     }
 
     fun clickedOnShuffle() {
-         currentPagerPosition.value =  Pair(
-             (0..shirtItemsLiveData.value!!.size-1).random()
-             ,
-             (0..pantItemsLiveData.value!!.size-1).random()
-         )
+        if(shirtItemsLiveData.value != null && pantItemsLiveData.value != null){
+            val shirtsCount = if(shirtItemsLiveData.value!!.size == 0) {
+                0
+            }
+            else {
+                shirtItemsLiveData.value!!.size -1
+            }
+            val pantsCount = if(pantItemsLiveData.value!!.size == 0) {
+                0
+            }
+            else {
+                pantItemsLiveData.value!!.size -1
+            }
+
+            currentPagerPosition.value =  Pair(
+                (0..shirtsCount).random()
+                ,
+                (0..pantsCount).random()
+            )
+        }
+
     }
 
     fun clothItemSelectionChanaged(shirtPostion: Int, pantPosition: Int) {

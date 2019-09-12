@@ -5,4 +5,7 @@ import org.sushobh.exampleapp.MainActivity
 
 class MainPresenter(val mainActivity: MainActivity) : BasePresenter(mainActivity) {
 
+
+
+
 }
